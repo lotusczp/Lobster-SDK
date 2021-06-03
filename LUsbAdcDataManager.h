@@ -2,7 +2,7 @@
 #define LUSBADCDATAMANAGER_H
 
 #include <QObject>
-#include <QList>
+#include <QMap>
 #include <QTimer>
 #include "LUsbAdcDataReceiver.h"
 
@@ -37,7 +37,7 @@ protected:
 
 private:
     QTimer                          *m_pScanTimer;
-    QList<LUsbAdcDataReceiver*>     m_listReceivers;
+    QMap<int, LUsbAdcDataReceiver*>     m_mapReceivers;
     LYavUsbAdcDllWrapper            *m_pYavUsbAdcDllWrapper;
 };
 

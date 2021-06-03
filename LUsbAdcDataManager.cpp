@@ -14,10 +14,6 @@ LUsbAdcDataManager::LUsbAdcDataManager(QObject *parent) : QObject(parent)
     connect(this, SIGNAL(stopScan()), m_pScanTimer, SLOT(stop()));
 
     m_pYavUsbAdcDllWrapper = new LYavUsbAdcDllWrapper;
-
-    for(int i=0; i<USBADC_CHANNEL_NUM; i++) {
-        m_listReceivers.append(nullptr);
-    }
 }
 
 LUsbAdcDataManager::~LUsbAdcDataManager()
@@ -56,7 +52,7 @@ int LUsbAdcDataManager::openDevice()
 void LUsbAdcDataManager::registerReceiver(LUsbAdcDataReceiver *a_pReceiver)
 {
     if(a_pReceiver->getPortNum() < USBADC_CHANNEL_NUM) {
-        m_listReceivers[a_pReceiver->getPortNum()] = a_pReceiver;
+        m_mapReceivers[a_pReceiver->getPortNum()] = a_pReceiver;
     }
 }
 
@@ -82,7 +78,10 @@ void LUsbAdcDataManager::handleReceiveScan()
         result[port] = sum[port]/groupNum;
     }
 
-    foreach (LUsbAdcDataReceiver *pReceiver, m_listReceivers) {
+    QMapIterator<int, LUsbAdcDataReceiver*> it(m_mapReceivers);
+    while(it.hasNext()) {
+        it.next();
+        LUsbAdcDataReceiver* pReceiver = it.value();
         if(pReceiver) {
             pReceiver->receiveMsgCallback(result[pReceiver->getPortNum()], result[pReceiver->getPortNum()]*10.0/4095);
         }
